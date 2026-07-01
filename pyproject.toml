@@ -14,7 +14,10 @@ name = "ml-01-intro" # CUSTOM: Package distribution name (use lowercase and dash
 readme = "README.md"
 requires-python = ">=3.14"
 version = "0.1.0"
-
+description = "Machine learning problem characterization project."
+authors = [
+    { name = "Sabri Hamdaoui" },
+]
 dependencies = [
     "datafun-toolkit", # logging
     "ipykernel", # notebooks
@@ -27,7 +30,10 @@ dependencies = [
     "seaborn",   # statistical data visualization built on matplotlib
     "matplotlib" # plotting library for static, animated, and interactive visualizations in Python
 ]
-
+[project.urls]
+Homepage = "https://sabrouch36.github.io/ml-01-intro/"
+Repository = "https://github.com/sabrouch36/ml-01-intro"
+Documentation = "https://sabrouch36.github.io/ml-01-intro/"
 [project.optional-dependencies]
 dev = [
     # WHY: Only used during development, not required for running the package.

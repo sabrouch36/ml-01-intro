@@ -21,8 +21,12 @@ authors:
     orcid: "https://orcid.org/0000-0001-6165-7389"
     affiliation: "Northwest Missouri State University, School of Computer Science and Information Systems, Maryville, MO, USA"
 
-repository-code: "https://github.com/denisecase/ml-01-intro"
-url: "https://github.com/denisecase/ml-01-intro"
+  - family-names: Hamdaoui
+    given-names: Sabri
+    affiliation: "Northwest Missouri State University"
+
+repository-code: "https://github.com/sabrouch36/ml-01-intro"
+url: "https://sabrouch36.github.io/ml-01-intro/"
 license: MIT
 
 abstract: >

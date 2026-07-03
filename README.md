@@ -215,3 +215,93 @@ Additional project instructions, terms, and notes:
 ## License
 
 [MIT](./LICENSE)
+
+Phase 4: Make a Technical Modification
+
+## Custom Technical Modification
+
+This project includes a custom supervised regression application that predicts
+student scores from study-related features.
+
+The custom implementation is located in:
+
+- `src/mlstudio/app_sabri.py`
+
+The custom dataset is located in:
+
+- `data/raw/hours_scores_sabri.csv`
+
+### Modification
+
+I added a derived feature named `study_engagement`.
+
+It combines the number of hours studied with the student's attendance percentage:
+
+```python
+study_engagement = hours_studied * attendance_pct / 100
+
+This modification expands the model from five original features to six features:
+
+hours_studied
+practice_quizzes
+attendance_pct
+sleep_hours
+prior_score
+study_engagement
+
+The derived feature is created both for the training dataset and for any new
+case submitted to the trained model.
+
+Machine Learning Workflow
+
+The custom application performs the following steps:
+
+Loads the student performance dataset.
+Inspects the dataset structure.
+Checks for missing values and duplicate rows.
+Creates the derived study_engagement feature.
+Splits the data into training and testing sets.
+Trains a Linear Regression model.
+Evaluates the model using MAE and R-squared.
+Predicts the score for one new student case.
+Creates and saves two visualizations.
+Results
+
+The latest successful execution produced the following results:
+
+Dataset rows: 10
+Missing values: 0
+Duplicate rows: 0
+Mean Absolute Error: 0.48
+R-squared: 1.00
+Predicted score for the new case: 83.4
+
+The predicted student case used:
+
+6.5 study hours
+4 practice quizzes
+92% attendance
+7 hours of sleep
+Previous score of 72
+Calculated study engagement of 5.98
+
+The results show that hours_studied had the strongest positive model
+coefficient.
+
+Because the dataset contains only 10 records and several related features,
+the evaluation results should be interpreted cautiously. The high R-squared
+value may indicate that the model is overfitting this small educational dataset.
+
+Visualizations
+Hours Studied vs Student Score
+
+Linear Regression Model Coefficients
+
+Run the Custom Application
+
+Run the following command from the project root folder:
+
+uv run python -m mlstudio.app_sabri
+
+Close the chart windows after reviewing them to allow the application to
+finish successfully.

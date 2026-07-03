@@ -28,47 +28,14 @@ import logging
 from pathlib import Path
 from typing import Final
 
+from datafun_toolkit.logger import get_logger, log_header
+from matplotlib.axes import Axes
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_absolute_error, r2_score
 from sklearn.model_selection import train_test_split
-
-try:
-    from datafun_toolkit.logger import get_logger, log_header
-except ImportError:
-
-    def get_logger(
-        name: str = "ML",
-        level: str | int = "INFO",
-    ) -> logging.Logger:
-        """Return a basic logger when datafun_toolkit is unavailable."""
-        level_value = (
-            getattr(logging, level.upper(), logging.INFO)
-            if isinstance(level, str)
-            else level
-        )
-
-        logger = logging.getLogger(name)
-        logger.setLevel(level_value)
-
-        if not logger.handlers:
-            handler = logging.StreamHandler()
-            formatter = logging.Formatter(
-                "%(asctime)s %(levelname)s %(name)s %(message)s"
-            )
-            handler.setFormatter(formatter)
-            logger.addHandler(handler)
-
-        return logger
-
-    def log_header(logger: logging.Logger, title: str) -> None:
-        """Log a simple section header."""
-        logger.info("=" * 40)
-        logger.info(title)
-        logger.info("=" * 40)
-
 
 # === Section 1b. CONFIGURE LOGGER ONCE PER MODULE ===
 
@@ -275,66 +242,46 @@ def predict_example(model: LinearRegression) -> None:
 
 
 def make_plots(df_clean: pd.DataFrame, model: LinearRegression) -> None:
-    """Create and save charts for the supervised regression case."""
-    output_dir = Path("docs/images")
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    # Figure 1: Hours studied vs score
+    """Create charts for the supervised regression case."""
     LOG.info("Creating chart: hours studied vs score")
 
-    fig1, ax1 = plt.subplots(figsize=(9, 5))
+    _, scatter_ax = plt.subplots(figsize=(9, 5))
 
-    sns.scatterplot(
+    scatter_plot: Axes = sns.scatterplot(
         data=df_clean,
         x="hours_studied",
         y=TARGET_COL,
-        ax=ax1,
+        ax=scatter_ax,
     )
 
-    ax1.set_title("Hours Studied vs Student Score")
-    ax1.set_xlabel("Hours Studied")
-    ax1.set_ylabel("Score")
+    scatter_plot.set_title("Hours Studied vs Score")
+    scatter_plot.set_xlabel("Hours Studied")
+    scatter_plot.set_ylabel("Score")
+    plt.tight_layout()
 
-    fig1.tight_layout()
-    fig1.savefig(
-        str(output_dir / "Figure_1.png"),
-        dpi=300,
-        bbox_inches="tight",
-    )
-
-    # Figure 2: Model coefficients
     LOG.info("Creating chart: model coefficients")
+
+    _, coefficient_ax = plt.subplots(figsize=(9, 5))
 
     coefficient_df = pd.DataFrame(
         {
             "feature": FEATURE_COLS,
             "coefficient": model.coef_,
         }
-    ).sort_values("coefficient", ascending=True)
+    ).sort_values("coefficient", ascending=False)
 
-    LOG.info("Model coefficients:\n%s", coefficient_df)
-
-    fig2, ax2 = plt.subplots(figsize=(10, 6))
-
-    ax2.barh(
-        coefficient_df["feature"],
-        coefficient_df["coefficient"],
+    bar_plot: Axes = sns.barplot(
+        data=coefficient_df,
+        x="coefficient",
+        y="feature",
+        color="steelblue",
+        ax=coefficient_ax,
     )
 
-    ax2.axvline(0, linewidth=1)
-
-    ax2.set_title("Linear Regression Model Coefficients")
-    ax2.set_xlabel("Coefficient")
-    ax2.set_ylabel("Feature")
-
-    fig2.tight_layout()
-    fig2.savefig(
-        str(output_dir / "Figure_2.png"),
-        dpi=300,
-        bbox_inches="tight",
-    )
-
-    LOG.info("Charts saved in: %s", output_dir)
+    bar_plot.set_title("Model Coefficients")
+    bar_plot.set_xlabel("Coefficient")
+    bar_plot.set_ylabel("Feature")
+    plt.tight_layout()
 
 
 # === Section 9. SUMMARY AND NEXT STEPS ===

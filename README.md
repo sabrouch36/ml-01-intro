@@ -305,3 +305,149 @@ uv run python -m mlstudio.app_sabri
 
 Close the chart windows after reviewing them to allow the application to
 finish successfully.
+
+---
+
+## Phase 5: Custom World Cup Player Value Project
+
+### Project Overview
+
+This phase applies the supervised machine learning workflow to a new problem
+and dataset.
+
+The project answers the following question:
+
+> Can player characteristics and tournament-performance statistics be used to
+> predict a football player's market value?
+
+This is a supervised regression problem because the target,
+`market_value_eur`, is a known numeric value.
+
+### Dataset
+
+The project uses a synthetic World Cup 2026 player-performance dataset.
+
+The original dataset contains:
+
+- 54,600 match-level records
+- 1,248 unique players
+- 75 columns
+- No duplicate player-match records
+- No missing values in the selected modeling columns
+
+Because each player appears in multiple matches, the raw data is aggregated
+into one record per player before training the model.
+
+### Project Files
+
+- `data/raw/world_cup_2026_players.csv` - original match-level data
+- `data/processed/world_cup_players_model.csv` - one aggregated row per player
+- `data/output/world_cup_player_value_predictions.csv` - saved test predictions
+- `src/mlstudio/prepare_world_cup_data.py` - data preparation module
+- `src/mlstudio/app_world_cup.py` - regression model application
+- `docs/images/world_cup_actual_vs_predicted.png` - final visualization
+
+### Data Preparation
+
+The preparation module groups the match-level records by `player_id` and
+creates totals or averages for:
+
+- Minutes played
+- Goals
+- Assists
+- Shots on target
+- Expected goals
+- Expected assists
+- Pass accuracy
+- Defensive actions
+- Distance covered
+- Top speed
+- Stamina score
+- Player rating
+
+The processed dataset contains 1,248 players and 21 columns.
+
+Run the preparation module with:
+
+```shell
+uv run python -m mlstudio.prepare_world_cup_data
+```
+
+### Modeling Approach
+
+The project uses a Linear Regression pipeline with:
+
+- `train_test_split`
+- `StandardScaler`
+- `OneHotEncoder`
+- `ColumnTransformer`
+- `TransformedTargetRegressor`
+
+The target is transformed with `log1p` because player market values are highly
+skewed.
+
+The model uses player characteristics, position, and performance statistics
+normalized per 90 minutes.
+
+### Model Results
+
+The data was split into 998 training players and 250 testing players.
+
+| Metric | Result |
+|---|---:|
+| Baseline median prediction | €10,194,198 |
+| Baseline Mean Absolute Error | €15,243,531 |
+| Model Mean Absolute Error | €11,985,172 |
+| Root Mean Squared Error | €22,912,425 |
+| R-squared | 0.300 |
+| MAE improvement over baseline | 21.38% |
+
+The model reduced Mean Absolute Error by 21.38% compared with the baseline.
+
+The R-squared result indicates that the selected features explain approximately
+30% of the variation in player market values.
+
+### Actual vs Predicted Market Values
+
+![Actual vs Predicted Player Market Value](docs/images/world_cup_actual_vs_predicted.png)
+
+The dashed diagonal line represents perfect predictions.
+
+The model performs more consistently for players with low and moderate market
+values. It often underestimates players with extremely high market values.
+
+### Run the Project
+
+First prepare the dataset:
+
+```shell
+uv run python -m mlstudio.prepare_world_cup_data
+```
+
+Then train and evaluate the model:
+
+```shell
+uv run python -m mlstudio.app_world_cup
+```
+
+The predictions are saved to:
+
+```text
+data/output/world_cup_player_value_predictions.csv
+```
+
+### Conclusion
+
+This project demonstrates how to:
+
+- Apply supervised regression to a new domain
+- Prepare and aggregate a large dataset
+- Prevent player-level data leakage
+- Engineer per-90-minute features
+- Process numeric and categorical variables
+- Compare a trained model with a baseline
+- Save predictions and create a visualization
+
+The model performed better than the baseline, but player market value also
+depends on factors not included in the dataset, such as club reputation,
+contract details, transfer demand, injuries, and future potential.

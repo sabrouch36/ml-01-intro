@@ -76,3 +76,299 @@ Include:
 - What kinds of real problems you could apply these skills to in the future
 
 Display at least one image or screenshot showing your work.
+
+# Machine Learning Project Documentation
+
+This project demonstrates a supervised machine learning workflow using Python,
+pandas, scikit-learn, and Matplotlib.
+
+The work includes:
+
+- A small technical modification to the student-score example
+- A custom regression project using World Cup player-performance data
+- Data preparation, feature engineering, model training, evaluation, and visualization
+
+## Project Files
+
+- `src/mlstudio/app_sabri.py` - Phase 4 technical modification
+- `src/mlstudio/prepare_world_cup_data.py` - prepares one row per player
+- `src/mlstudio/app_world_cup.py` - Phase 5 custom regression project
+- `data/raw/world_cup_2026_players.csv` - original match-level dataset
+- `data/processed/world_cup_players_model.csv` - aggregated player dataset
+- `data/output/world_cup_player_value_predictions.csv` - model predictions
+- `docs/images/world_cup_actual_vs_predicted.png` - final model visualization
+
+## Documentation Pages
+
+- [Project Instructions](./project-instructions.md)
+- [Your Files](./your-files.md)
+- [Glossary](./glossary.md)
+- [API](./api.md)
+
+---
+
+## Phase 4: Technical Modification
+
+For Phase 4, I created a custom version of the student-score regression
+application in:
+
+```text
+src/mlstudio/app_sabri.py
+What I Changed
+
+I added a derived feature named study_engagement.
+
+It combines study hours and attendance percentage:
+
+study_engagement = hours_studied * attendance_pct / 100
+
+The original model used five input features. My modified model used six:
+
+hours_studied
+practice_quizzes
+attendance_pct
+sleep_hours
+prior_score
+study_engagement
+
+I also added a horizontal coefficient chart to show the positive and negative
+coefficients learned by the Linear Regression model.
+
+Verification
+
+The modified application successfully:
+
+Loaded 10 student records
+Found no missing values
+Found no duplicate rows
+Added the new derived feature
+Trained the regression model
+Predicted one new student score
+Created two visualizations
+
+The new case produced a predicted score of:
+
+83.4
+
+The model reported:
+
+Metric	Result
+Mean Absolute Error	0.48
+R-squared	1.00
+
+The high R-squared value should be interpreted cautiously because the dataset
+contains only 10 records and several related features.
+
+Difficulty
+
+I rated this modification as moderate.
+
+Creating the derived feature was straightforward, but I also needed to update
+the prediction input, correct a logger compatibility issue, and improve the
+coefficient chart so that all features appeared clearly.
+
+Run Phase 4
+uv run python -m mlstudio.app_sabri
+Phase 5: Custom World Cup Player Value Project
+Project Question
+
+Can player characteristics and tournament-performance statistics be used to
+predict a football player's market value?
+
+This is a supervised regression problem because:
+
+The dataset includes a known target value
+The target is numeric
+The model learns from labeled historical examples
+
+The prediction target is:
+
+market_value_eur
+Basis and Data
+
+The project uses a synthetic World Cup 2026 player-performance dataset.
+
+The raw dataset contains:
+
+54,600 match-level records
+1,248 unique players
+75 columns
+No duplicate player-match rows
+No missing values in the selected modeling columns
+
+Each player appeared in multiple match records. Training directly on the raw
+rows could place the same player in both the training and testing sets.
+
+To prevent this problem, I aggregated the match-level data into one row per
+player.
+
+The processed dataset contains:
+
+1,248 players and 21 columns
+Data Preparation
+
+The preparation module is:
+
+src/mlstudio/prepare_world_cup_data.py
+
+It creates one record per player and calculates totals or averages such as:
+
+Total minutes
+Total goals
+Total assists
+Total shots on target
+Total expected goals
+Total expected assists
+Average pass accuracy
+Total defensive actions
+Total distance covered
+Maximum top speed
+Average stamina score
+Average player rating
+
+Run the data-preparation step with:
+
+uv run python -m mlstudio.prepare_world_cup_data
+
+The processed file is saved to:
+
+data/processed/world_cup_players_model.csv
+Modeling Approach
+
+The custom model is implemented in:
+
+src/mlstudio/app_world_cup.py
+
+The project uses:
+
+LinearRegression
+train_test_split
+StandardScaler
+OneHotEncoder
+ColumnTransformer
+Pipeline
+TransformedTargetRegressor
+
+The market-value target is transformed with log1p because player market
+values are highly skewed.
+
+Numeric Features
+
+The model uses:
+
+Age
+Height
+Weight
+Average pass accuracy
+Maximum top speed
+Average stamina score
+Goals per 90 minutes
+Assists per 90 minutes
+Shots on target per 90 minutes
+Expected goals per 90 minutes
+Expected assists per 90 minutes
+Defensive actions per 90 minutes
+Distance covered per 90 minutes
+Categorical Feature
+
+The model also uses:
+
+position
+
+Player positions are converted into numeric model inputs with one-hot encoding.
+
+Model Results
+
+The dataset was split into:
+
+Dataset	Players
+Training set	998
+Testing set	250
+
+The median-value baseline predicted the same market value for every test player.
+
+Metric	Result
+Baseline median prediction	€10,194,198
+Baseline MAE	€15,243,531
+Model MAE	€11,985,172
+Model RMSE	€22,912,425
+Model R-squared	0.300
+MAE improvement over baseline	21.38%
+
+The model reduced Mean Absolute Error by approximately 21.38% compared with the
+baseline.
+
+An R-squared value of 0.300 means the model explains approximately 30% of the
+variation in player market values.
+
+The result is useful but not highly accurate. Market value can also depend on
+factors not included in the dataset, such as:
+
+Club reputation
+League quality
+Contract length
+Player popularity
+Transfer demand
+Injury history
+Future potential
+Actual vs Predicted Values
+
+The chart below compares actual player market values with the model predictions.
+
+The dashed diagonal line represents perfect predictions.
+
+Many high-value players appear below the perfect-prediction line. This means the
+Linear Regression model often underestimates players with extremely high market
+values.
+
+The model performs more consistently for players with low and moderate market
+values.
+
+Output
+
+The model saves its test predictions to:
+
+data/output/world_cup_player_value_predictions.csv
+
+The output includes:
+
+Player ID
+Player name
+Position
+Actual market value
+Predicted market value
+Absolute prediction error
+Run the Custom Project
+
+Run the preparation step first:
+
+uv run python -m mlstudio.prepare_world_cup_data
+
+Then run the model:
+
+uv run python -m mlstudio.app_world_cup
+Summary
+
+This project applied the techniques from the example project to a different
+dataset and problem.
+
+I independently completed the following tasks:
+
+Inspected a new dataset
+Identified a regression target
+Prevented player-level data leakage
+Aggregated match records into player records
+Engineered per-90-minute features
+Processed numeric and categorical features
+Trained and evaluated a regression model
+Compared the model with a baseline
+Saved prediction results
+Created a final visualization
+
+The model performed better than the baseline, but the results also showed that
+player market value is influenced by additional factors beyond tournament
+performance.
+
+The same workflow could be applied to other real-world regression problems such
+as predicting salaries, house prices, product demand, sales, or athlete
+valuations.
